@@ -202,6 +202,78 @@ leftJoin()파라미터로 team만이 들어가게 되고, on절을 추가하여 
 
 <br><Br>
 
+# 6. 서브 쿼리
+
+```java
+List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.age.eq(
+                    JPAExpressions
+                        .select(memberSub.age.max())
+                                .from(memberSub)
+                ))
+                .fetch();
+```
+
+위와 같이 사용할 수 있다.  
+static method로 추가해서 더 간편하게 사용할 수 있다.  
+
+<br>
+<Br>
+
+## 1) 한계
+
+from 절에 서브쿼리를 지원하지 않는다. JPA에서 where절의 서브쿼리만을 지원한다.  
+하이버네이트를 사용하면 select절의 서브쿼리를 지원해준다.  
+하지만 from절의 서브쿼리는 아직 지원하지 않는다는 한계가 있다.
+
+<br><Br>
+
+## 2) 극복
+1. 서브쿼리를 join으로 변경(가능한 상황도 있고, 불가능한 상황도 있음)
+2. 애플리케이션에서 쿼리를 2번 분리해서 실행
+3. nativeSQL을 사용
+
+<br><Br>
+
+# 7. Case
+- select, where, orderBy에서 사용 가능
+
+<br><Br>
+
+## 1) 단순한 조건
+
+```java
+List<String> result = queryFactory
+                .select(member.age
+                        .when(10).then("열살")
+                        .when(20).then("스무살")
+                        .otherwise("기타"))
+                .from(member)
+                .fetch();
+```
+
+<br><Br>
+
+## 2) 복잡한 조건
+
+```java
+List<String> result = queryFactory
+                .select(new CaseBuilder()
+                        .when(member.age.between(0, 20)).then("0~20살")
+                        .when(member.age.between(21, 30)).then("21~30살")
+                        .otherwise("기타"))
+                .from(member)
+                .fetch();
+```
+
+<br><Br>
+
+
+
+
+
+
 
 
 

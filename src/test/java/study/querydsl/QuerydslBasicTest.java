@@ -587,7 +587,7 @@ public class QuerydslBasicTest {
 
     /**
      * 별칭이 다를때
-     * MemberDto(username, age) -> UserDto(name, age)
+     * Member(username, age) -> UserDto(name, age)
      */
     @Test
     public void differentDto(){
@@ -642,7 +642,6 @@ public class QuerydslBasicTest {
         if(ageCond != null){
             builder.and(member.age.eq(ageCond));
         }
-
 
         return queryFactory
                 .selectFrom(member)
@@ -716,6 +715,57 @@ public class QuerydslBasicTest {
         em.flush();
         em.clear();
     }
+
+    /**
+     * SQL function - replace
+     */
+    @Test
+    public void replace(){
+        List<String> result = queryFactory
+                .select(Expressions.stringTemplate(
+                        "function('replace',{0},{1},{2})",
+                        member.username, "member", "M"))
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+    }
+
+    /**
+     * SQL function - lower
+     */
+    @Test
+    public void eqLower(){
+        List<String> result = queryFactory
+                .select(member.username)
+                .from(member)
+                .where(member.username.eq(Expressions.stringTemplate(
+                        "function('lower',{0})", member.username)))
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+    }
+
+    /**
+     * SQL function - simple lower
+     */
+    @Test
+    public void eqLower2(){
+        List<String> result = queryFactory
+                .select(member.username)
+                .from(member)
+                .where(member.username.eq(member.username.lower()))
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+    }
+
 
 
 }
