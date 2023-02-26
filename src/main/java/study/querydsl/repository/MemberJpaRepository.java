@@ -85,6 +85,7 @@ public class MemberJpaRepository {
                         team.id,
                         team.name))
                 .from(member)
+                .leftJoin(member.team, team)
                 .where(builder)
                 .fetch();
     }
@@ -98,6 +99,7 @@ public class MemberJpaRepository {
                         team.id,
                         team.name))
                 .from(member)
+                .leftJoin(member.team, team)
                 .where(
                         usernameEq(condition.getUsername()),
                         teamNameEq(condition.getTeamName()),
